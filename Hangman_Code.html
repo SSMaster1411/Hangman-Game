@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hangman - Coca-Cola Edition</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background-color: #f9f9f9;
+    }
+    .word {
+      font-size: 32px;
+      letter-spacing: 10px;
+      margin-bottom: 20px;
+    }
+    .keyboard button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    button:disabled {
+      background-color: #ddd;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Hangman: Coca-Cola Edition</h1>
+  <div class="word" id="displayWord"></div>
+
+  <div class="keyboard" id="keyboard"></div>
+  <div class="status" id="status"></div>
+
+  <button onclick="restartGame()">Restart</button>
+
+  <script>
+    const word = "coca-cola";
+    let guessed = [];
+    let lives = 6;
+
+    function updateDisplay() {
+      const display = word.split('').map(letter =>
+        letter === '-' ? '-' : guessed.includes(letter) ? letter : '_'
+      ).join(' ');
+      document.getElementById('displayWord').textContent = display;
+
+      if (!display.includes('_')) {
+        document.getElementById('status').textContent = "🎉 You guessed it! Redirecting...";
+        disableKeyboard();
+        // ✅ Redirect after 2 seconds
+        setTimeout(() => {
+          window.location.href = "https://www.coca-cola.com"; // Change to your URL
+        }, 2000);
+      } else if (lives <= 0) {
+        document.getElementById('status').textContent = "💀 Game Over! The word was: " + word;
+        disableKeyboard();
+      }
+    }
+
+    function handleGuess(letter) {
+      if (!guessed.includes(letter)) {
+        guessed.push(letter);
+        if (!word.includes(letter)) lives--;
+        updateDisplay();
+      }
+    }
+
+    function disableKeyboard() {
+      document.querySelectorAll('.keyboard button').forEach(btn => btn.disabled = true);
+    }
+
+    function createKeyboard() {
+      const keyboard = document.getElementById('keyboard');
+      keyboard.innerHTML = '';
+      for (let i = 65; i <= 90; i++) {
+        const letter = String.fromCharCode(i).toLowerCase();
+        const btn = document.createElement('button');
+        btn.textContent = letter;
+        btn.onclick = () => handleGuess(letter);
+        keyboard.appendChild(btn);
+      }
+    }
+
+    function restartGame() {
+      guessed = [];
+      lives = 6;
+      createKeyboard();
+      document.getElementById('status').textContent = '';
+      updateDisplay();
+    }
+
+    // Initialize the game
+    createKeyboard();
+    updateDisplay();
+  </script>
+
+</body>
+</html>
+
